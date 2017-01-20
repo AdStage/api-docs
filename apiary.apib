@@ -1,0 +1,137 @@
+FORMAT: 1A
+HOST: https://platform.adstage.io/api
+
+# AdStage API
+
+The AdStage API is a cross-network advertising API allowing access to AdWords, 
+Bing Ads, Facebook, LinkedIn, Twitter, Instagram and Google Analytics data 
+from a unified interface.
+
+## Basics [/me]
+
+You can get a token by contacting our Support Team.
+
+### Get User Info [GET]
++ Request
+    + Headers
+    
+            Authentication: Bearer de4dxxxxb33f
+
++ Response 200 (application/json)
+        
+        {
+            "first_name": "Clark",
+            "last_name": "Gates-George",
+            "email": "clark@adstage.io",
+            "created_at": 1351707901,
+            "id": "/api/users/1",
+            "fetch_id": 1,
+            "has_linked": true,
+            "account_status": {
+                "adwords": "unimportable",
+                "bing_ads": "unimportable",
+                "facebook": "currently_importing",
+                "linkedin": "permanent_authentication_error",
+                "twitter": "currently_importing"
+              },
+              "visible_account_status": {
+                "adwords": "unimportable",
+                "bing_ads": "unimportable",
+                "facebook": "currently_importing",
+                "linkedin": "currently_importing",
+                "twitter": "currently_importing"
+              },
+              "_embedded": {
+                "adstage:organizations": [
+                  {
+                    "id": "/api/organizations/1",
+                    "fetch_id": 40,
+                    "active_accounts_count": 45,
+                    "is_active_customer": true,
+                    "additional_accounts_purchased": 23,
+                    "advertiser_type": "Agency / Consultant",
+                    "advertising_objective": "Unknown",
+                    "billable_accounts_count": 43,
+                    "billing_contact_email": "clark@adstage.io",
+                    "is_billing_error": false,
+                    "blurb": "Connect ad accounts to the AdStage analytics dashboard and compare performance.  View current key performance metrics (CPA, CPM, CTR) at a glance. Measure your advertising ROS with customizable graphs that allow you to easily gauge performance across multiple networks for any historical period. AdStage identifies your top-performing ads and keywords, which helps you determine what wording resonates well with your audience. Use that ad messaging in your sales pitch, blog posts, or website copy. ",
+                    "company_name": "AdStage",
+                    "customer_status": "paying",
+                    "is_former_customer": false
+                 }
+                ]
+            }
+        }
+                                
+
+
+## Organization [/organization/{organization_fetch_id}]
+
+### Pull Organization Info [GET]
+
++ Response 200 (application/json)
+
+        {
+          "active_accounts_count": 45,
+          "is_active_customer": true,
+          "additional_accounts_purchased": 23,
+          "advertiser_type": "Agency / Consultant",
+          "advertising_objective": "Unknown",
+          "billable_accounts_count": 43,
+          "billing_contact_email": "clark@adstage.io",
+          "is_billing_error": false,
+          "blurb": "Connect ad accounts to the AdStage analytics dashboard and compare performance.  View current key performance metrics (CPA, CPM, CTR) at a glance. Measure your advertising ROS with customizable graphs that allow you to easily gauge performance across multiple networks for any historical period. AdStage identifies your top-performing ads and keywords, which helps you determine what wording resonates well with your audience. Use that ad messaging in your sales pitch, blog posts, or website copy. ",
+          "company_name": "AdStage",
+          "company_url": "http://www.adstage.io",
+          "cumulative_monthly_spend": 12654,
+          "customer_status": "paying",
+          "fetch_id": 40
+        }
+
+
+
+### Create a New Question [POST]
+
+You may create your own question using this action. It takes a JSON
+object containing a question and a collection of answers in the
+form of choices.
+
++ Request (application/json)
+
+        {
+            "question": "Favourite programming language?",
+            "choices": [
+                "Swift",
+                "Python",
+                "Objective-C",
+                "Ruby"
+            ]
+        }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /questions/2
+
+    + Body
+
+            {
+                "question": "Favourite programming language?",
+                "published_at": "2015-08-05T08:40:51.620Z",
+                "choices": [
+                    {
+                        "choice": "Swift",
+                        "votes": 0
+                    }, {
+                        "choice": "Python",
+                        "votes": 0
+                    }, {
+                        "choice": "Objective-C",
+                        "votes": 0
+                    }, {
+                        "choice": "Ruby",
+                        "votes": 0
+                    }
+                ]
+            }
