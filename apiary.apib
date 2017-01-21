@@ -7,16 +7,22 @@ The AdStage API is a cross-network advertising API allowing access to AdWords,
 Bing Ads, Facebook, LinkedIn, Twitter, Instagram and Google Analytics data 
 from a unified interface.
 
-## Basics [/me]
+        
+## Basics [/]
 
-You can get a token by contacting our Support Team.
+To get started using the AdStage API you will need a token. You can get one by talking to our support team.
 
-### Get User Info [GET]
+
+### Get Current User Info [GET /me]
+
+
 + Request
     + Headers
     
-            Authentication: Bearer de4dxxxxb33f
-
+            Authorization: Bearer de4dxxxxb33f
+            Content-Type: application/json
+            Accept: application/json
+            
 + Response 200 (application/json)
         
         {
@@ -64,74 +70,136 @@ You can get a token by contacting our Support Team.
         }
                                 
 
+### Get Organization Info [GET /organization/{org_id}]
 
-## Organization [/organization/{organization_fetch_id}]
 
-### Pull Organization Info [GET]
++ Parameters
 
+    + org_id (integer) - the fetch id of the user's organization
+
++ Request
+    + Headers
+    
+            Authorization: Bearer de4dxxxxb33f
+            Content-Type: application/json
+            Accept: application/json
+            
 + Response 200 (application/json)
 
-        {
-          "active_accounts_count": 45,
-          "is_active_customer": true,
-          "additional_accounts_purchased": 23,
-          "advertiser_type": "Agency / Consultant",
-          "advertising_objective": "Unknown",
-          "billable_accounts_count": 43,
-          "billing_contact_email": "clark@adstage.io",
-          "is_billing_error": false,
-          "blurb": "Connect ad accounts to the AdStage analytics dashboard and compare performance.  View current key performance metrics (CPA, CPM, CTR) at a glance. Measure your advertising ROS with customizable graphs that allow you to easily gauge performance across multiple networks for any historical period. AdStage identifies your top-performing ads and keywords, which helps you determine what wording resonates well with your audience. Use that ad messaging in your sales pitch, blog posts, or website copy. ",
-          "company_name": "AdStage",
-          "company_url": "http://www.adstage.io",
-          "cumulative_monthly_spend": 12654,
-          "customer_status": "paying",
-          "fetch_id": 40
-        }
+    + Attributes
+    
+        + id: /api/organizations/1 (string)
+        
+            The path to the organization in the AdStage API
+            
+        + fetch_id: 40 (number)
+        
+            The fetch id of the organization
+
+    + Body
+    
+            {
+              "active_accounts_count": 45,
+              "is_active_customer": true,
+              "additional_accounts_purchased": 23,
+              "advertiser_type": "Agency / Consultant",
+              "advertising_objective": "Unknown",
+              "billable_accounts_count": 43,
+              "billing_contact_email": "clark@adstage.io",
+              "is_billing_error": false,
+              "blurb": "Connect ad accounts to the AdStage analytics dashboard and compare performance.  View current key performance metrics (CPA, CPM, CTR) at a glance. Measure your advertising ROS with customizable graphs that allow you to easily gauge performance across multiple networks for any historical period. AdStage identifies your top-performing ads and keywords, which helps you determine what wording resonates well with your audience. Use that ad messaging in your sales pitch, blog posts, or website copy. ",
+              "company_name": "AdStage",
+              "company_url": "http://www.adstage.io",
+              "cumulative_monthly_spend": 12654,
+              "customer_status": "paying",
+              "fetch_id": 40
+            }
 
 
+## Building Reports [/organizations/{org_id}/build_report] 
 
-### Create a New Question [POST]
+### Getting Report [POST]
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+This endpoint is used to pull your advertising data. To use this you will need your token and your organization's fetch id.
+
+Use this endpoint to pull reports at any level of reporting available within AdStage.
+
+#### Date Ranges
+
+The AdStage endpoint uses date range strings to represent time periods. These can be strings of format: 
+`"last_30_days"`, or `"this_month"`, or you can use hardcoded dates such as `"2016-12-25..2016-12-31"`.  
+Hardcoded date ranges will give you data for all calendar days between the two dates provided (inclusive).
+
++ Parameters
+
+    + org_id (integer) - the fetch id of the user's organization
 
 + Request (application/json)
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
     + Headers
+    
+            Authorization: Bearer de4dxxxxb33f
+            Accept: application/json
 
-            Location: /questions/2
+    + Attributes
+        
+        + `entity_level`: "accounts", "campaigns","ad_groups", "ads", "keywords" (enum, required)
+            
+            which entity level of report you want to fetch (accounts, campaigns, ad_groups, ads, keywords)
+        
+        + `date_range`: "last_30_days" (string, required)
+            
+            an adstage date range string (this_month, last_30_days, 2016-12-12..2016-12-15)
 
+    + Body
+        
+            {
+                "entity_level": "campaigns",
+                "date_range": "last_30_days",
+                "fields": ["clicks", "spend", "campaign_name", "remote_campaign_id", "network"
+            }
+
++ Response 200 (application/json)
+
+    + Attributes
+    
+        + _embedded
+            - `adstage:metrics` (array)
+                - (object)
+                    - data (object)
+                        + clicks: 5 (number) 
+                        + spend: 25.05 (number)
+                    - meta (object)
+                        + campaign_name: "AdStage V2 Gmail Campaign" (string)
+                        + row_name: "AdStage V2 Gmail Campaign" (string)
+                        + network: "adwords" (string)
+                        + currency_code: "USD" (string)
+                
+            
+        
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
+              "_embedded": {
+                "adstage:metrics": [
+                  {
+                    "data": {
+                      "clicks": 1014,
+                      "spend": 339.460006713867
+                    },
+                    "timeframe": {
+                      "start": "2016-12-22T00:00:00Z",
+                      "end": "2017-01-20T23:59:59Z"
+                    },
+                    "meta": {
+                      "campaign_name": "Display - US - Gmail Ads v2",
+                      "remote_campaign_id": "735025362",
+                      "network": "adwords",
+                      "currency_code": "USD",
+                      "currency_symbol": "$",
+                      "row_name": "Display - US - Gmail Ads v2"
                     }
+                  }
                 ]
+              }
             }
