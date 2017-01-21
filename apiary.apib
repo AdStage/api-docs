@@ -13,6 +13,11 @@ from a unified interface.
 To get started using the AdStage API you will need a token. You can get one by talking to our support team.
 
 
+__Note__: If you are a developer that would like to create applications for multiple AdStage users, our API has OAuth 2 
+support, but we don't currently have a self-service way to create new OAuth2 applications. Contact us and we
+can get you started with a `client_id` and `client_secret`
+
+
 ### Get Current User Info [GET /me]
 
 
@@ -20,7 +25,6 @@ To get started using the AdStage API you will need a token. You can get one by t
     + Headers
     
             Authorization: Bearer de4dxxxxb33f
-            Content-Type: application/json
             Accept: application/json
             
 + Response 200 (application/json)
@@ -70,7 +74,7 @@ To get started using the AdStage API you will need a token. You can get one by t
         }
                                 
 
-### Get Organization Info [GET /organization/{org_id}]
+### Get Organization Info [GET /organizations/{org_id}]
 
 
 + Parameters
@@ -81,7 +85,6 @@ To get started using the AdStage API you will need a token. You can get one by t
     + Headers
     
             Authorization: Bearer de4dxxxxb33f
-            Content-Type: application/json
             Accept: application/json
             
 + Response 200 (application/json)
@@ -169,6 +172,7 @@ Hardcoded date ranges will give you data for all calendar days between the two d
                     - data (object)
                         + clicks: 5 (number) 
                         + spend: 25.05 (number)
+                        + others: 13.20 (number)
                     - meta (object)
                         + campaign_name: "AdStage V2 Gmail Campaign" (string)
                         + row_name: "AdStage V2 Gmail Campaign" (string)
