@@ -7,6 +7,24 @@ The AdStage API is a cross-network advertising API allowing access to AdWords,
 Bing Ads, Facebook, LinkedIn, Twitter, Instagram and Google Analytics data 
 from a unified interface.
 
+## Status
+
+Keep up to date with any problems we might be experiencing here: [http://status.adstage.io/](http://status.adstage.io/)
+
+## AdStage API Concepts
+
+### Date Ranges
+
+The AdStage endpoint uses date range strings to represent time periods. These can be strings of format: 
+`"last_30_days"`, or `"this_month"`, or you can use hardcoded dates such as `"2016-12-25..2016-12-31"`.  
+Hardcoded date ranges will give you data for all calendar days between the two dates provided (inclusive).
+
+### Entity IDs
+
+AdStage has two styles of IDs available for external use. The newer, preferred syntax is a path that looks 
+like `"/network/{network}/{entity}/{remote_id}"`, where the network variable can be one of `adwords`, `bing_ads`, 
+`twitter`, `linkedin`, `facebook` or `adstage`, and entity variable can be one of `account`, `campaign`, `ad_group`, 
+`ad`, `keyword`.
         
 ## Basics [/]
 
@@ -129,9 +147,8 @@ Use this endpoint to pull reports at any level of reporting available within AdS
 
 #### Date Ranges
 
-The AdStage endpoint uses date range strings to represent time periods. These can be strings of format: 
-`"last_30_days"`, or `"this_month"`, or you can use hardcoded dates such as `"2016-12-25..2016-12-31"`.  
-Hardcoded date ranges will give you data for all calendar days between the two dates provided (inclusive).
+(See AdStage API Concepts section on Date Ranges)
+
 
 + Parameters
 
@@ -148,11 +165,58 @@ Hardcoded date ranges will give you data for all calendar days between the two d
         
         + `entity_level`: "accounts", "campaigns","ad_groups", "ads", "keywords" (enum, required)
             
-            which entity level of report you want to fetch (accounts, campaigns, ad_groups, ads, keywords)
+            which entity level of report you want to fetch (`"accounts"`, `"campaigns"`, 
+            `"ad_groups"`, `"ads"`, `"keywords"`)
         
         + `date_range`: "last_30_days" (string, required)
             
-            an adstage date range string (this_month, last_30_days, 2016-12-12..2016-12-15)
+            an adstage date range string (`"this_month"`, `"last_30_days"`, `"2016-12-12..2016-12-15"`)
+        
+        + limit: 10 (number) - number of rows to include
+        + `sort_by`: "clicks" (string) - metric name/meta name to sort by
+        + order: "desc" (string) - sort either ascending (`"asc"`) or descending (`"desc"`)
+        + `group_by`: "network" (string) - if supplied, metrics will be grouped by this meta key
+      
+        + aggregate_by: "day" (string) - if supplied, will change the response to timeseries instead of metrics rows, can be (`"day"`, `"week"`, or `"month"`)
+        + networks: "adwords" (string) - list of networks to include in the result, can be array, single value, or comma-separated list
+        + statuses: "all_visible" (string) - use `"all_with_deleted"` to filter to include deleted entities, 
+          or `"all_active"` for only active entities. This is a shorthand to add a specific filter.
+        + filters (array) - a set of filters to limit the results by (AND conditions)
+            
+            + (object) - filter object
+                + path: "meta/campaign_name" (string) - metric name or meta name prefixed with `"meta/"`
+                + value: 5 - a number, string or array, depending on operator 
+                + op: (enum)
+                    + "gt" - greater than
+                    + "lt" - less than
+                    + "gte" - greater than or equal
+                    + "lte" - less than or equal
+                    + "in" - exact match to one of the values provided in the filter
+                    + "iin" - case-insensitive match for one of the values provided in the filter
+                    + "match" - case-sensitive string matching
+                    + "nomatch" - case-sensitive string NOT matching
+                    + "imatch" - case-insensitive string matching
+                    + "inomatch" - case-insensitive string NOT matching
+                    
+            
+        + fields: "clicks", "spend", "impressions" (array) - optional list of fields to include in the result
+        + query: nil (object) - This is used to dynamically include or exclude certain fields in the response. 
+          set to true to include all available metadata, or pick and choose specific keys to show with an object like 
+          
+              ```
+              {"_embedded": 
+                {"adstage:metrics/totals": {"data": true}}}
+              ```
+        + provider: "adstage" (string) - to pull reports from other sources, you can set this to a source name. 
+          Currently we support "facebook", which requires `"targets"` to be set to a single facebook account,
+          and `"google_analytics"`, which requires `"targets"` to be set to a single GA Profile. 
+        + targets: "/network/adstage/user/292", "/network/adstage/folder/5555", "/network/adstage/account_group/333", "/network/adwords/account/2332" (array)
+            
+            Optional list of AdStage Entity IDs to pull a report for, if not included all data available for 
+            the organization will be used. This can be a list of accounts, account groups, 
+            folders, or campaigns.
+        + dimensions (array) - only available if you use a non-AdStage provider - a list of dimension names
+     
 
     + Body
         
@@ -167,18 +231,38 @@ Hardcoded date ranges will give you data for all calendar days between the two d
     + Attributes
     
         + _embedded
-            - `adstage:metrics` (array)
+            - `adstage:metrics` (array) - list of report rows (if `"aggregate_by"` is set, see `"adstage:time_series"`)
                 - (object)
-                    - data (object)
-                        + clicks: 5 (number) 
-                        + spend: 25.05 (number)
-                        + others: 13.20 (number)
-                    - meta (object)
-                        + campaign_name: "AdStage V2 Gmail Campaign" (string)
-                        + row_name: "AdStage V2 Gmail Campaign" (string)
-                        + network: "adwords" (string)
-                        + currency_code: "USD" (string)
-                
+                    - data (object) - key-value pairs of metric identifiers to floats
+                    - meta (object) - key-value pairs of metadata names to strings or objects
+                    
+            - `adstage:time_series` (array) - list of report time series rows (if `"aggregate_by"` is not set, see `"adstage:metrics"`)
+                - (object)
+                    - series (array) - datapoints separated by aggregation
+                        - (object) 
+                            - timeframe 
+                                + start
+                                + end
+                            - data (object) - key-value pairs of metric identifiers to floats
+                    - data (object) - totals for the requested timeseries metrics
+                    - meta (object) - key-value pairs of metadata names to strings or objects
+                        
+            - `adstage:metrics/totals` (object) - totals row for the result
+                - data (object) - key-value pairs of metric identifiers to floats
+                - meta (object) - key-value pairs of metadata names to arrays of unique values in the results
+            - `adstage:time_series/totals` (object) - totals row for the result if `"aggregate_by"` set
+                - data (object) - totals for the requested timeseries metrics
+                - series (array) 
+            
+                    - (object) 
+                        - timeframe 
+                            + start
+                            + end
+                        - data (object) - key-value pairs of metric identifiers to floats
+                        
+                - meta (object) - key-value pairs of metadata names to arrays of unique values in the results
+                    
+                     
             
         
     + Body
@@ -207,3 +291,127 @@ Hardcoded date ranges will give you data for all calendar days between the two d
                 ]
               }
             }
+            
+## Custom Conversions [/organizations/{org_id}/metric_descriptors]
+
+The AdStage custom metric descriptor endpoint will allow data to be uploaded to a custom column 
+for any existing entities stored within AdStage.  This requires a few steps to get data flowing:
+
+### Step 1. Create a custom metric [POST /organizations/{org_id}/metric_descriptors]
+
+Sets up a metric descriptor to allow data upload. Returns the url to allow upload
+
++ Parameters
+
+    + org_id (integer) - the fetch id of the user's organization
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer de4dxxxxb33f
+            Accept: application/json
+
+    + Attributes
+        
+        + `name`: "Sales Leads: A+" (string, required) - full name of the conversion column
+        + `short_name`: "A+ Leads" (string, required) - a shorter version of name for table column headers
+        + `tooltip`: "Leads scored A+ in Salesforce" (string, required) - a text description of the converion for use in tooltips in AdStage products
+    
+    + Body
+    
+                    {
+                      "name": "Sales Leads: A+",
+                      "short_name": "A+ Leads",
+                      "tooltip": "Leads scored A+ in Salesforce"
+                    }
+
++ Response 201
+
+  Note that in the response, the id is returned as `custom_conversions:{fetch id}:conversions`.
+  You can use the link to find the appropriate URL for upload in Step 3 of the conversion upload process.
+  
+  + Attributes
+  
+        + id: "custom_conversions:14:conversions" (string) - the raw metric name returned in reports (see [Getting Report](#reference/0/building-reports/getting-report) )
+        + `_links` (object)
+            + `adstage:custom_conversion_upload` (object)
+              + href: "https://platform.adstage.io/api/organizations/40/metric_descriptors/14/conversions" (string) - the url for step 3.
+
+  + Body
+  
+            {
+              "id": "custom_conversions:14:conversions",
+              "category": "CUSTOM_CONVERSION",
+              "type": "METRIC",
+              "name": "Sales Leads: A+",
+              "short_name": "A+ Leads",
+              "tooltip": "Doesn't matter",
+              "default_sort_order": "DESC",
+              "format": "DEFAULT",
+              "_links": {
+                "adstage:custom_conversion_upload": {
+                  "href": "https://platform.adstage.io/api/organizations/40/metric_descriptors/14/conversions"
+                }
+              }
+            }
+    
+
+### Step 2. Post data [POST /organizations/{org_id}/metric_descriptors/{descriptor_id}/conversions]
+
+POST data in JSON format to this endpoint with a `"conversions"` key and a `"date_range"` key. 
+
+(See AdStage API Concepts section on Date Ranges and Entity IDs for details on those subjects)
+
+Each conversion has a `"timestamp"` key and `"attribution"` key. You can also provide an optional `"value"` key.
+`"attribution"` is a map of AdStage Entity IDs to weights. By default, 
+you should use a weight of `1`, but if you want to do custom multitouch attribution models you can use partial values or multipliers. If you want
+to roll up values from, for example campaigns, to their account, you must also include both entity ids in the `"attribution"` map.
+`"value"` will by multiplied by the weight to determine the conversion value. These are used to compute Return on Ad Spend.
+
++ Parameters
+
+    + org_id (integer) - the fetch id of the user's organization
+    + descriptor_id (integer) - the fetch id of the metric descriptor
+
++ Request (application/json)
+
+    + Headers
+    
+            Authorization: Bearer de4dxxxxb33f
+            Accept: application/json
+
+    + Attributes
+        
+        + `conversions` (array, required) - a list of conversions
+            + (object)
+                + `timestamp`: `"2016-02-03T03:40Z"` (string, required) - ISO8061 formatted string representing when the conversion happened
+                + `value`: 30.5 (number) - Optional conversion value
+                + `attribution` - a list of key/value pairs where the key is an AdStage id and the value is how to weight the conversion (use 1 unless you want to do multi-touch attribution modeling)
+                    + `/network/adwords/campaign/530303`: 1 (number) - (this id is just an example, use valid ids)
+                    + `/network/adwords/acount/530303`: 1 (number) - (this id is just an example, use valid ids)
+                
+        + `date_range`: "last_30_days" (string, required)
+            
+            an adstage date range string (this_month, last_30_days, 2016-12-12..2016-12-15)
+
+    + Body
+        
+                {
+                  "conversions": [
+                      {"timestamp": "2016-11-11T06:00Z", "value": 35.0, "attribution": {"/network/adwords/campaign/143365350": 1, "/network/adwords/account/143365350": 1}},
+                      {"timestamp": "2016-11-11T07:00Z", "value": 41.25, "attribution": {"/network/adwords/campaign/143365350": 0.5, "/network/adwords/campaign/143365350": 0.5}},
+                      {"timestamp": "2016-11-11T07:30Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-11T08:00Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-11T08:40Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-12T06:02Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-13T06:02Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-14T06:02Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-15T06:02Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-16T06:02Z", "attribution": {"/network/adwords/campaign/143365350": 1}},
+                      {"timestamp": "2016-11-17T06:02Z", "attribution": {"/network/adwords/campaign/143365350": 1}}
+                   ],
+                   "date_range": "2016-11-11..2106-11-17"
+                }
+
++ Response 201
