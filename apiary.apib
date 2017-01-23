@@ -24,11 +24,21 @@ Hardcoded date ranges will give you data for all calendar days between the two d
 AdStage has two styles of IDs available for external use. The newer, preferred syntax is a path that looks 
 like `"/network/{network}/{entity}/{remote_id}"` where:
 
-* the `{network}` variable can be one of `adwords`, `bing_ads`, 
-  `twitter`, `linkedin`, `facebook` or `adstage`
-* the `{entity}` variable can be one of `account`, `campaign`, `ad_group`, 
-  `ad`, `keyword`
-* the `{remote_id}` variable is the ID 
++ the `{network}` variable can be one of: 
+  + `adwords`
+  + `bing_ads`
+  + `twitter`
+  + `linkedin`
+  + `facebook`
+  + `adstage` (with special entities: `account_group`, `user`, `organization` and `folder`) 
++ the `{entity}` variable can be one of: 
+  + `account`
+  + `campaign`
+  + `ad_group`
+  + `ad`
+  + `keyword`
++ the `{remote_id}` variable is the ID provided by the network, these can be obtained from our 
+  reporting endpoint as `remote_account_id`, `remote_campaign_id`, `remote_ad_group_id`, `remote_ad_id`, `remote_keyword_id`
    
      
 ## Basics [/]
