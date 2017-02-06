@@ -31,7 +31,11 @@ Hardcoded date ranges will give you data for all calendar days between the two d
 
 ### Entity IDs
 
-AdStage has two styles of IDs available for external use. The newer, preferred syntax is a path that looks 
+AdStage has two styles of IDs available for external use. The newer versions are called entity ids in our API.
+When you pull a report from the Build Report endpoint, each row, where available, will include an `entity_id` 
+in the `meta` section of that row. 
+
+To generate these ids manually, the syntax is a string that looks 
 like `"/network/{network}/{entity}/{remote_id}"` where:
 
 + the `{network}` variable can be one of: 
@@ -47,6 +51,7 @@ like `"/network/{network}/{entity}/{remote_id}"` where:
   + `ad_group`
   + `ad`
   + `keyword`
+  + `criterion` (adwords keywords)
 + the `{remote_id}` variable is the ID provided by the network, these can be obtained from our 
   reporting endpoint as `remote_account_id`, `remote_campaign_id`, `remote_ad_group_id`, `remote_ad_id`, `remote_keyword_id`
    
@@ -274,6 +279,7 @@ to pull data broken down by day, see the Time Series Report.
                     },
                     "meta": {
                       "campaign_name": "Display - US - Gmail Ads v2",
+                      "entity_id": "/network/adwords/campaign/735025362",
                       "remote_campaign_id": "735025362",
                       "network": "adwords",
                       "currency_code": "USD",
@@ -469,6 +475,7 @@ day, week, or month datapoints. The request is the same as a standard report but
                     "meta": {
                       "campaign_name": "Search - US - Nonbrand - Facebook Ads Jacob",
                       "remote_campaign_id": "53744320",
+                      "entity_id": "/network/bing_ads/campaign/53744320",
                       "network": "bing_ads",
                       "currency_code": "USD",
                       "currency_symbol": "$",
