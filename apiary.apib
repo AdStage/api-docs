@@ -161,6 +161,238 @@ like `"/network/{network}/{entity}/{remote_id}"` where:
             }
 
 
+### List Account Groups [GET /users/{user_id}/account_groups]    
+
+
+
++ Parameters
+    
+    + user_id: 40 (string)
+        
+        which user you want an account group list for. 
+
++ Request
+
+    + Headers
+        
+        Accept: application/json
+        Authorization: Bearer de4dxxxxb33f
+        
++ Response 200
+
+  A list of account groups. 
+  
+  + Attributes
+        + _links (object)
+            + next (object)
+                + href (string) - url to get next page of account groups
+                
+                     `"https://platform.adstage.io/api/users/40/account_groups?limit=10&offset=10&networks=all"` 
+        
+        + _embedded (object)
+            + item (array)
+                + (object)
+                    + id: 40 (number) - the identifier assigned to this account group
+                    + name: "Client #1" (string) - the full human readable name for the metric
+                    + is_visible: true (boolean) - whether all the accounts are visible in this group
+                    + account_count: 5 (number) - total number of accounts in the group
+                    + _forms (object) - list of actions available on the account group
+  
+  + Body
+  
+        {
+            "_embedded": {
+                "item": [
+                    {
+                        "account_count": 1,
+                        "id": 988,
+                        "is_visible": false,
+                        "name": "Client 3 Marketing",
+                        "_embedded": {},
+                        "_forms": {
+                            "adstage:add": {
+                                "fields": {
+                                    "network": "string",
+                                    "network_account_id": "integer"
+                                },
+                                "href": "https://platform.adstage.io/api/users/40/account_groups/988/add",
+                                "method": "POST",
+                                "name": "account_group"
+                            }
+                        },
+                        "_links": {
+                            "adstage:add": {
+                                "form": true,
+                                "href": "https://platform.adstage.io/api/users/40/account_groups/988/add",
+                                "method": "POST",
+                                "name": "account_group"
+                            },
+                            "adstage:list": [
+                                {
+                                    "href": "https://platform.adstage.io/api/users/40/account_groups/988/list_accounts{?limit,offset}",
+                                    "name": "network_accounts",
+                                    "templated": true
+                                }
+                            ],
+                            "self": {
+                                "href": "/api/users/40/account_groups/988"
+                            }
+                        }
+                    }
+                ]
+            },
+            "_links": {
+                "next": {
+                    "href": "https://platform.adstage.io/api/users/40/account_groups?limit=1&offset=1&networks=adwords,bing_ads,facebook,linkedin,twitter&sort_by=clicks&order=desc"
+                }
+            },
+            "counts": {
+                "overall": 5,
+                "page": 1
+            },
+            "current_page": 1,
+            "id": "https://platform.adstage.io/api/users/40/account_groups?limit=1&offset=0&networks=adwords,bing_ads,facebook,linkedin,twitter&sort_by=clicks&order=desc",
+            "list_of": "item",
+            "page_options": {
+                "limit": 1,
+                "offset": 0
+            },
+            "page_size": 1,
+            "page_total": 1,
+            "total": 5,
+            "total_pages": 5
+        }
+
+
+### List Folders [GET /users/{user_id}/list_folders]    
+
+
+
++ Parameters
+    
+    + user_id: 40 (string)
+        
+        which user you want an account group list for. 
+
++ Request
+
+    + Headers
+        
+        Accept: application/json
+        Authorization: Bearer de4dxxxxb33f
+        
++ Response 200
+
+  A list of folders. 
+  
+  + Attributes
+        + _links (object)
+            + next (object)
+                + href (string) - url to get next page of folders
+                
+                     `"https://platform.adstage.io/api/users/40/list_folders?limit=10&offset=10&networks=all"` 
+        
+        + _embedded (object)
+            + item (array) - list of folders
+                + (object)
+                    + fetch_id: 40 (string) - the identifier assigned to this folder
+                    + id: "/api/folders/40" (string) - a uri identifier for the folder
+                    + name: "Folder #1" (string) - name of the folder
+                    + network_counts (object) - count of campaigns in folder by network
+                    + _forms (object) - list of actions available on the folder
+                    + _links (object) - list of actions and related entities to the folder
+                        + `adstage:network_campaign` - HAL links to adstage campaigns
+  
+  + Body
+  
+        {
+            "_embedded": {
+                "item": [
+                    {
+                        "daily_budget_value": 0.0,
+                        "fetch_id": "168",
+                        "id": "/api/folders/168",
+                        "lifetime_budget_value": 0.0,
+                        "monthly_budget_value": 0.0,
+                        "name": "040414 Updated",
+                        "network_counts": {
+                            "bing_ads": 1,
+                            "totals": 1
+                        },
+                        "_forms": {
+                            "adstage:link": {
+                                "fields": {
+                                    "folder_id": {
+                                        "title": "Choose a folder",
+                                        "type": "adstage:folder",
+                                        "validators": [
+                                            "required"
+                                        ],
+                                        "value": "/api/folders/168"
+                                    },
+                                    "network_campaign_ids": {
+                                        "title": "Choose one or more campaigns",
+                                        "type": "adstage:folder",
+                                        "validators": [
+                                            "required"
+                                        ],
+                                        "value": []
+                                    }
+                                },
+                                "href": "https://platform.adstage.io/api/folders/168/add",
+                                "method": "POST",
+                                "title": "Link Campaigns to Folder"
+                            }
+                        },
+                        "_links": {
+                            "adstage:network_campaign": [
+                                {
+                                    "data-fetch_id": 6745,
+                                    "data-id": "/api/network/bing_ads/campaigns/6745",
+                                    "data-navgroup": "search",
+                                    "data-network": "bing_ads",
+                                    "data-network_name": "Bing",
+                                    "href": "https://platform.adstage.io/api/network/bing_ads/accounts/506/campaigns/6745",
+                                    "name": "/api/network/bing_ads/campaigns/6745",
+                                    "network_account_id": "/api/network/bing_ads/accounts/506",
+                                    "network_account_name": "AdStage, Inc.",
+                                    "title": "AdStage: 040414"
+                                }
+                            ],
+                            "self": {
+                                "data-fetch_id": "168",
+                                "href": "https://platform.adstage.io/api/folders/168",
+                                "name": "168",
+                                "title": "040414 Updated"
+                            }
+                        }
+                    }
+                ]
+            },
+            "_links": {
+                "next": {
+                    "href": "https://platform.adstage.io/api/users/40/list_folders?limit=1&offset=1&networks=adwords,bing_ads,facebook,linkedin,twitter&sort_by=clicks&order=desc"
+                },
+                "self": {
+                    "href": "https://platform.adstage.io/api/users/40/list_folders?limit=1&access_token=57a082a0de5d9eba2d6580a3b1a7ba1876c23d0a46177f327a4289a3b272b670"
+                }
+            },
+            "counts": {},
+            "current_page": 1,
+            "id": "https://platform.adstage.io/api/users/40/list_folders?limit=1&offset=0&networks=adwords,bing_ads,facebook,linkedin,twitter&sort_by=clicks&order=desc",
+            "list_of": "item",
+            "page_options": {
+                "limit": 1,
+                "offset": 0
+            },
+            "page_size": 1,
+            "page_total": 1,
+            "total": 2309,
+            "total_pages": 2309
+        }
+
+
+
 ## Building Reports [/organizations/{org_id}/build_report] 
 
 
@@ -629,15 +861,66 @@ more information on the names and formats of these metrics.
          {"id":"impressions","short_name":"Impr.","name":"Impressions","is_default":true,"tooltip":"<b>Impressions</b> show how many times your ads have been shown.","format":"DEFAULT","type":"METRIC","category":"PERFORMANCE","default_sort_order":"DESC","is_adwords":true,"is_bing_ads":true,"is_facebook":true,"is_linkedin":true,"is_twitter":true,"is_account":true,"is_campaign":true,"is_ad_group":true,"is_ad":true,"is_keyword":true,"is_post":null,"is_company_status_update":null},
          {"id":"ctr","short_name":"CTR","name":"CTR","is_default":true,"tooltip":"<b>Clickthrough rate</b> shows how often people who saw your ad ended up clicking it.<br><br> CTR is clicks divided by impressions.<br><br> To improve your CTR, check out our <a href=\"http://blog.adstage.io/2013/05/23/5-tips-for-creating-effective-ppc-ads/\" target=\"_blank\">5 tips for creating effective ads</a>.","format":"PERCENTAGE","type":"METRIC","category":"PERFORMANCE","default_sort_order":"DESC","is_adwords":true,"is_bing_ads":true,"is_facebook":true,"is_linkedin":true,"is_twitter":true,"is_account":true,"is_campaign":true,"is_ad_group":true,"is_ad":true,"is_keyword":true,"is_post":null,"is_company_status_update":null}]
 
+### Organization Metric Descriptors [GET /organizations/{org_id}/metric_descriptors]    
+
+Some descriptors are specific to an organization. Usually these are custom conversions, created in AdStage and also both Facebook and LinkedIn. Use this endpoint to get 
+more information on the names and formats of these organization specific metrics.
+
++ Parameters
+    
+    + org_id: 40 (string)
+        
+        which organization you want descriptors for. 
+
++ Request
+
+    + Headers
+        
+        Accept: application/json
+        
++ Response 200
+
+  A list of columns that are available to pull via the reporting endpoint. 
+  
+  + Attributes
+        
+        + (array)
+            + (object)
+                + id: "clicks" (string) - the identifier assigned to the metric in reports
+                + short_name: "Clicks" (string) - a short human readable name for the metric
+                + name: "Clicks" (string) - the full human readable name for the metric
+                + tooltip: "Clicks shows how many times a user clicked on your ad" (string) - additional details about a metric, if available
+                + format: "DEFAULT", "PERCENTAGE", "CURRENCY", "TEXT", "DECIMAL", "INTEGER" (enum, string) - format for the metric (default is integer)
+                + type: "METRIC", "TEXT" (enum, string) - whether the descriptor is for a metric, or metadata 
+                + is_adwords: true (string) - if the metric is valid for the adwords network
+                + is_facebook: true (string) - if the metric is valid for the facebook network
+                + is_linkedin: true (string) - if the metric is valid for the linkedin network
+                + `is_bing_ads`: true (string) - if the metric is valid for the bing ads network
+                + is_twitter: true (string) - if the metric is valid for the twitter network                
+                + is_account: true (string) - if the metric is valid for the account reporting level
+                + is_campaign: true (string) - if the metric is valid for the campaign reporting level
+                + `is_ad_group`: true (string) - if the metric is valid for the ad group reporting level
+                + `is_ad`: true (string) - if the metric is valid for the ad reporting level
+                + is_keyword: true (string) - if the metric is valid for keyword reporting level
+  
+  + Body
+  
+        [{"id":"clicks","short_name":"Clicks","name":"Clicks","is_default":true,"tooltip":"<b>Clicks</b> show how many times your ads have been clicked.","format":"DEFAULT","type":"METRIC","category":"PERFORMANCE","default_sort_order":"DESC","is_adwords":true,"is_bing_ads":true,"is_facebook":true,"is_linkedin":true,"is_twitter":true,"is_account":true,"is_campaign":true,"is_ad_group":true,"is_ad":true,"is_keyword":true,"is_post":null,"is_company_status_update":null},
+         {"id":"impressions","short_name":"Impr.","name":"Impressions","is_default":true,"tooltip":"<b>Impressions</b> show how many times your ads have been shown.","format":"DEFAULT","type":"METRIC","category":"PERFORMANCE","default_sort_order":"DESC","is_adwords":true,"is_bing_ads":true,"is_facebook":true,"is_linkedin":true,"is_twitter":true,"is_account":true,"is_campaign":true,"is_ad_group":true,"is_ad":true,"is_keyword":true,"is_post":null,"is_company_status_update":null},
+         {"id":"ctr","short_name":"CTR","name":"CTR","is_default":true,"tooltip":"<b>Clickthrough rate</b> shows how often people who saw your ad ended up clicking it.<br><br> CTR is clicks divided by impressions.<br><br> To improve your CTR, check out our <a href=\"http://blog.adstage.io/2013/05/23/5-tips-for-creating-effective-ppc-ads/\" target=\"_blank\">5 tips for creating effective ads</a>.","format":"PERCENTAGE","type":"METRIC","category":"PERFORMANCE","default_sort_order":"DESC","is_adwords":true,"is_bing_ads":true,"is_facebook":true,"is_linkedin":true,"is_twitter":true,"is_account":true,"is_campaign":true,"is_ad_group":true,"is_ad":true,"is_keyword":true,"is_post":null,"is_company_status_update":null}]
+
 
 ## Custom Conversions [/organizations/{org_id}/metric_descriptors]
 
 The AdStage custom metric descriptor endpoint will allow data to be uploaded to a custom column 
-for any existing entities stored within AdStage.  This requires a few steps to get data flowing:
+for any existing entities stored within AdStage. You can then use these custom conversion columns in the
+reporting endpoints or in the AdStage product. This requires a few steps to get data flowing:
 
 ### Step 1. Create a custom metric [POST /organizations/{org_id}/metric_descriptors]
 
-Sets up a metric descriptor to allow data upload. Returns the url to allow upload
+Sets up a metric descriptor to allow data upload. Returns the url to allow upload. You only
+need to do this step once per conversion column you want to created. To get a list of conversion
+columns, see the Build Reports section - "Organization Metric Descriptors".
 
 + Parameters
 
