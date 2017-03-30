@@ -618,8 +618,9 @@ day, week, or month datapoints. The request is the same as a standard report but
                 {"adstage:metrics/totals": {"data": true}}}
               ```
         + provider: "adstage" (string) - to pull reports from other sources, you can set this to a source name. 
-          Currently we support "facebook", which requires `"targets"` to be set to a single facebook account,
-          and `"google_analytics"`, which requires `"targets"` to be set to a single GA Profile. 
+          The default is "adstage", which relies on data imported into AdStage. For external providers - 
+          currently we support "facebook", which requires `"targets"` to be set to a single facebook account,
+          and `"google_analytics"`, which requires `"targets"` to be set to a single GA Profile.
         + targets: "/network/adstage/user/292", "/network/adstage/folder/5555", "/network/adstage/account_group/333", "/network/adwords/account/2332" (array)
             
             Optional list of AdStage Entity IDs to pull a report for, if not included all data available for 
