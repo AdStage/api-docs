@@ -464,7 +464,9 @@ to pull data broken down by day, see the Time Series Report.
               ```
         + provider: "adstage" (string) - to pull reports from other sources, you can set this to a source name. 
           The default is "adstage", which relies on data imported into AdStage. For external providers - 
-          currently we support "facebook", which requires `"targets"` to be set to a single facebook account,
+          currently we support "facebook", which requires `"targets"` to be set to a single Facebook account,
+          "adwords", which requires `"targets"` to be set to a single AdWords account, "gemini", which requires `"targets"`
+          to be set to a single Gemini account (beta access only),
           and `"google_analytics"`, which requires `"targets"` to be set to a single GA Profile.
         + targets: "/network/adstage/user/292", "/network/adstage/folder/5555", "/network/adstage/account_group/333", "/network/adwords/account/2332" (array)
             
